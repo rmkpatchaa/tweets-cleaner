@@ -4,3 +4,9 @@ node_modules
 
 .idea
 .DS_Store
+
+hashTags.txt
+users.txt
+package-lock.json
+
+log.json

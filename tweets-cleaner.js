@@ -1,6 +1,7 @@
 'use strict'
 
 const chalk = require('chalk')
+const fs = require('fs')
 const Twitter = require('twitter')
 const Converter = require('csvtojson').Converter
 const jsonfile = require('jsonfile')
@@ -43,16 +44,51 @@ converter.fromFile(config.path, (err, json) => {
     return console.log(chalk.green('No more tweets to delete!'))
   }
 
-  console.log(chalk.green(`Starting tweets cleaner on ${Date.now()} - Deleting tweets older than ${maxDate}`))
-  deleteTweet(tweets, 0)
+  if (config.analyze) {
+    console.log(chalk.green(`Starting analyzing tweets on ${Date.now()} - Analyzing tweets older than ${maxDate}`))
+    analyzeTweets(tweets)
+  } else {
+    console.log(chalk.green(`Starting tweets cleaner on ${Date.now()} - Deleting tweets older than ${maxDate}`))
+    deleteTweet(tweets, 0)
+  }
 })
+
+function analyzeTweets (tweets) {
+  let hashTags = []
+  let users = []
+  tweets.forEach(tweet => {
+    const hashMatch = tweet.text.match(/#\w+/, 'gi')
+    if (hashMatch) {
+      hashTags = [...hashTags, ...hashMatch]
+    }
+    const userMatch = tweet.text.match(/@\w+/, 'gi')
+    if (userMatch) {
+      users = [...users, ...userMatch]
+    }
+  })
+  const hashData = [...new Set(hashTags)].map(hash => `'${hash}'`).join('\n')
+  fs.writeFile('./hashTags.txt', hashData, (err) => {
+    if (err) throw err
+    console.log('The hashtags file has been saved!')
+  })
+
+  const userData = [...new Set(users)].map(user => `'${user}'`).join('\n')
+  fs.writeFile('./users.txt', userData, (err) => {
+    if (err) throw err
+    console.log('The users file has been saved!')
+  })
+}
 
 function deleteTweet (tweets, i) {
   let next = config.callsInterval
   let remaining = 0
 
   client.post('statuses/destroy', {id: tweets[i].tweet_id}, function (err, t, res) {
-    remaining = parseInt(res.headers['x-rate-limit-remaining'])
+    if (res === undefined) {
+      remaining = NaN
+    } else {
+      remaining = parseInt(res.headers['x-rate-limit-remaining'])
+    }
 
     if (!isNaN(remaining) && remaining === 0) {
       console.log(chalk.cyan('Waiting'))
