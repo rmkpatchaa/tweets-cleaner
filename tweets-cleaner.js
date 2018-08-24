@@ -35,7 +35,7 @@ converter.fromFile(config.path, (err, json) => {
   const tweets = json.filter(t => {
     const hasId = !isNaN(parseInt(t.tweet_id))
     const oldEnough = new Date(t.timestamp) < maxDate
-    const shouldBeSaved = config.saveRegexp.some((regexp) => new RegExp(regexp).test(t.text))
+    const shouldBeSaved = config.saveRegexp.some((regexp) => new RegExp(regexp, 'gi').test(t.text))
     const notDeleted = logIds.indexOf(t.tweet_id) === -1
     return hasId && oldEnough && notDeleted && !shouldBeSaved
   })
@@ -77,6 +77,8 @@ function analyzeTweets (tweets) {
     if (err) throw err
     console.log('The users file has been saved!')
   })
+
+  console.log(chalk.green(`Tweets count ${tweets.length}`))
 }
 
 function deleteTweet (tweets, i) {
