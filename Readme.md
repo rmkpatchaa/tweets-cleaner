@@ -17,6 +17,7 @@ Here, tweets are accessed through your .zip archive and allows you to delete old
 
 ## Usage
 
+- Prerequisite : [npm](https://www.npmjs.com/get-npm)
 - [Request you Twitter archive](https://twitter.com/settings/account) (you might want to keep it safe, if you ever miss your tweets!)
 - [Create an app on Twitter](https://apps.twitter.com/) the get your keys
 - Download or clone the repo
