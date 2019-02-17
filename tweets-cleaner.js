@@ -25,7 +25,7 @@ const client = new Twitter({
   access_token_secret: config.access_token_secret
 })
 
-const converter = new Converter({checkType: false})
+const converter = new Converter({ checkType: false })
 converter.fromFile(config.path, (err, json) => {
   if (err || !json) {
     return console.log(chalk.red('NO VALID JSON CONVERTED!'))
@@ -67,13 +67,13 @@ function analyzeTweets (tweets) {
     }
   })
   const hashData = [...new Set(hashTags)].map(hash => `'${hash}'`).join('\n')
-  fs.writeFile('./hashTags.txt', hashData, (err) => {
+  fs.writeFile('./_hashTags.txt', hashData, (err) => {
     if (err) throw err
     console.log('The hashtags file has been saved!')
   })
 
   const userData = [...new Set(users)].map(user => `'${user}'`).join('\n')
-  fs.writeFile('./users.txt', userData, (err) => {
+  fs.writeFile('./_users.txt', userData, (err) => {
     if (err) throw err
     console.log('The users file has been saved!')
   })
@@ -85,7 +85,7 @@ function deleteTweet (tweets, i) {
   let next = config.callsInterval
   let remaining = 0
 
-  client.post('statuses/destroy', {id: tweets[i].tweet_id}, function (err, t, res) {
+  client.post('statuses/destroy', { id: tweets[i].tweet_id }, function (err, t, res) {
     if (res === undefined) {
       remaining = NaN
     } else {
@@ -104,7 +104,7 @@ function deleteTweet (tweets, i) {
       }
     }
 
-    jsonfile.writeFile(logFile, log, {spaces: 2}, function (err) {
+    jsonfile.writeFile(logFile, log, { spaces: 2 }, function (err) {
       if (err) {
         return console.log(chalk.red('ERROR WRITING JSON!'))
       }
